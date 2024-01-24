@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '@modules/auth/services/auth.service';
 
 @Component({
   selector: 'app-auth-page',
@@ -12,7 +13,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 export class AuthPageComponent implements OnInit{
   
   formLogin: FormGroup = new FormGroup({});
-  constructor() { }
+  /** En el constructor se hacen inyecciones */
+  constructor(private authService:AuthService) { }
 
   ngOnInit(): void {
     this.formLogin = new FormGroup(
@@ -30,10 +32,11 @@ export class AuthPageComponent implements OnInit{
     )
   }
   
+  /** Función que se dispara cuando se da en el botón de enviar */
   sendLogin(): void {
-    const body = this.formLogin.value
-    console.log('🖲️🖲️🖲️', body);
+    const {email, password} = this.formLogin.value
     
+    this.authService.sendCredentials(email, password)
   }
 }
 
