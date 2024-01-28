@@ -4,13 +4,11 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class AuthService {
-  public age = 0
-  private name = ''
 
   constructor() { }
 
 /**  Sin nada se entiende que es public */
   public sendCredentials(email: string, password: string): void {
-    console.log('💻💻', email, password)
+    console.log('💻💻', email, password);
   }
 }

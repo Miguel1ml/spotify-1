@@ -13,8 +13,10 @@ import { AuthService } from '@modules/auth/services/auth.service';
 export class AuthPageComponent implements OnInit{
   
   formLogin: FormGroup = new FormGroup({});
-  /** En el constructor se hacen inyecciones */
-  constructor(private authService:AuthService) { }
+  /** En el constructor se hacen inyecciones 
+   * lo que se coloca como alias puede ser lo que uno quiera
+  */
+  constructor(private /** este es el alias */ authService:AuthService) { }
 
   ngOnInit(): void {
     this.formLogin = new FormGroup(
