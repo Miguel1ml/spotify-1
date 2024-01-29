@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TracksPageComponent } from './tracks-page.component';
 
 describe('TracksPageComponent', () => {

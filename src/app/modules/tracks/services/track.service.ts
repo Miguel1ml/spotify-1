@@ -1,7 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 import { TrackModel } from '@core/models/tracks.models';
-import { Observable, of } from 'rxjs';
-import * as dataRaw from '../../../data/tracks.json'
 
 @Injectable({
   providedIn: 'root'
@@ -11,28 +13,47 @@ export class TrackService {
  * colocar un símbolo de $ al final 
  * Con esto [] les dice que se inicie como un array vacío 
  */
-  dataTracksTrending$: Observable<TrackModel[]> = of([])
-  dataTracksRandom$: Observable<any> = of([])
+  private readonly URL = environment.api
+  constructor(private http: HttpClient) { 
 
-  constructor() { 
-    const { data }: any = (dataRaw as any).default;
+  }
 
-    this.dataTracksTrending$ = of(data)
-    this.dataTracksRandom$ = new Observable((observer) => {
+  /**
+   * 
+   * @returns Devolver todas las canciones! Buenas!
+   */
 
-      const trackExample: TrackModel = {
-        _id:9,
-        name:'Leve',
-        album:'Cartel de Santa',
-        url:'http://',
-        cover:'../assets/images/Leve.jpeg'
-      }
-      
-      setTimeout(() => {
-       observer.next([trackExample])
-      }, 3500)
-    /** 3500 son 3.5 segundos */
+  private skipById(listTracks: TrackModel[], id:number): Promise<TrackModel[]> {
+    return new Promise((resolve, reject) => {
+      const listTmp = listTracks.filter(a => a._id != id)
+      resolve(listTmp)
     })
-    
+  } 
+
+  getAllTracks$():Observable<any> {
+    return this.http.get(`${this.URL}/tracks`)
+    .pipe(
+      map(({ data }: any) => {
+        return data
+      })
+    )
+    /** Los pipe pueden hacer filtros de operadores */
+  }
+  /**
+   * 
+   * @returns Devolver canciones random
+   * 
+   */
+
+  getAllRandom$(): Observable<any> {
+    return this.http.get(`${this.URL}/tracks`)
+    .pipe(
+      mergeMap(({ data }: any) => this.skipById(data, 0))
+      // ,
+      // map((dataRevertida) => {
+      //   return dataRevertida.filter((track: TrackModel) => track._id != 1)
+      // })
+    )
+   
   }
 }
