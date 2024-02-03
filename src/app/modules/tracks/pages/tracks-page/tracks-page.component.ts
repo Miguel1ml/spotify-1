@@ -4,7 +4,7 @@ import { SectionGenericComponent } from '@shared/components/section-generic/sect
 import { TrackModel } from '@core/models/tracks.models';
 import { TrackService } from '@modules/tracks/services/track.service';
 import { Subscription } from 'rxjs';
-import { error } from 'node:console';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-tracks-page',
@@ -27,19 +27,27 @@ ngOnInit(): void {
     this.loadDataRandom()
 }
 
-loadDataAll(): void {
-    this.trackService.getAllTracks$().toPromise()
-    .then(res => {})
-    .catch(error => {})
+async loadDataAll(): Promise <any> {
+    this.tracksTrending = await firstValueFrom(this.trackService.getAllTracks$());
+    this.tracksRandom = await firstValueFrom(this.trackService.getAllRandom$());
+//     try {
+//     const dataRaw = await firstValueFrom(this.trackService.getAllTracks$());
+//     console.log('🖲️🖲️🖲️', dataRaw);
+// } catch (error) {
+//     console.error('Error al cargar datos', error);
+// }
 }
 
 loadDataRandom(): void {
-    this.trackService.getAllRandom$()
-    .subscribe((response: TrackModel[]) => {
-        this.tracksRandom = response
-    })
-}
-
+    const randomTracksSub = this.trackService.getAllRandom$()
+      .subscribe({
+        next: (response: TrackModel[]) => {
+          this.tracksRandom = response;
+        }
+      });
+    this.listObservers$.push(randomTracksSub);
+  }
+  
  ngOnDestroy(): void {
     this.listObservers$.forEach(sub => sub.unsubscribe());
  }

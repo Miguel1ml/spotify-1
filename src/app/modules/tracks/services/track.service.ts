@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { TrackModel } from '@core/models/tracks.models';
 
@@ -48,11 +48,18 @@ export class TrackService {
   getAllRandom$(): Observable<any> {
     return this.http.get(`${this.URL}/tracks`)
     .pipe(
-      mergeMap(({ data }: any) => this.skipById(data, 0))
+      tap(data => console.log('🖲️🖲️🖲️', data)),
+      mergeMap(({ data }: any) => this.skipById(data, 0)),
       // ,
       // map((dataRevertida) => {
       //   return dataRevertida.filter((track: TrackModel) => track._id != 1)
       // })
+      tap(data => console.log('🆗🆗🆗', data)),
+      catchError((err) => {
+        const { status, statusText} = err;
+        console.log('Algo pasó revisame ⁉️⁉️', [status, statusText]);
+        return of([])
+      })
     )
    
   }
