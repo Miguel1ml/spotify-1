@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '@modules/auth/services/auth.service';
 import { CookieService } from 'ngx-cookie-service';
 
@@ -17,11 +18,12 @@ export class AuthPageComponent implements OnInit{
   errorSession: boolean = false
   formLogin: FormGroup = new FormGroup({});
   
+
   /** En el constructor se hacen inyecciones 
    * lo que se coloca como alias puede ser lo que uno quiera
   */
   constructor(private /** este es el alias */ authService:AuthService,
-  private cookie: CookieService) { }
+  private cookie: CookieService, private router: Router) { }
 
   ngOnInit(): void {
     this.formLogin = new FormGroup(
@@ -44,9 +46,10 @@ export class AuthPageComponent implements OnInit{
     const { email, password } = this.formLogin.value;
     this.authService.sendCredentials(email, password).subscribe({
       next: (responseOk) => {
-        console.log('Sesión iniciada de forma correcta');
+        console.log('Sesión iniciada de forma correcta', responseOk);
         const { tokenSession, data} = responseOk
         this.cookie.set('token', tokenSession, 4, '/' ) // el 4 es de días
+        this.router.navigate(['/', 'tracks'])
       }
       ,
       error: (errorResponse: HttpErrorResponse) => {
